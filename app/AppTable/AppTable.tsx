@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ProductTable from "../Products/ProductTable";
 
 const AppTable = () => {
   return (
@@ -14,9 +15,11 @@ const AppTable = () => {
         </div>
       </CardHeader>
 
-      <CardContent></CardContent>
+      <CardContent>
+        <ProductTable />
+      </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default AppTable
+export default AppTable;

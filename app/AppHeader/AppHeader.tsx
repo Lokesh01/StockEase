@@ -21,7 +21,7 @@ function AppLogo() {
       </div>
 
       <div className="flex items-center gap-1 text-left text-sm leading-tight">
-        <span className="truncate font-semibold text-[24px]">Stockly</span>
+        <span className="truncate font-semibold text-[24px]">StockEase</span>
       </div>
     </div>
   );
