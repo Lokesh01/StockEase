@@ -6,6 +6,7 @@ import {
   ColumnFiltersState,
   FilterFn,
   filterFns,
+  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -16,6 +17,14 @@ import {
 import { useEffect, useState } from "react";
 import StatusDropdown, { Status } from "../AppTable/dropdowns/StatusDropdown";
 import CategoriesDropdown from "../AppTable/dropdowns/CategoriesDropdown";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -57,7 +66,7 @@ const ProductTable = <TData, TValue>({
   const [selectedStatuses, setSelectedStatuses] = useState<Status[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  console.log(selectedCategories);
+  // console.log(selectedCategories);
 
   useEffect(() => {
     setColumnFilters((prev) => {
@@ -90,8 +99,8 @@ const ProductTable = <TData, TValue>({
     columns,
     state: {
       pagination,
-      sorting,
       columnFilters,
+      sorting,
     },
     filterFns: {
       multiSelect: multiSelectFilter,
@@ -106,11 +115,11 @@ const ProductTable = <TData, TValue>({
   });
 
   return (
-    <div>
-      <div>
+    <div className="poppins">
+      <div className="flex flex-col gap-3 mb-8 mt-6">
         <div className="flex items-center justify-between">
           <Input
-            // value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
@@ -129,6 +138,63 @@ const ProductTable = <TData, TValue>({
             />
           </div>
         </div>
+
+        {/* filter Area */}
+
+        {/* Upcoming Table */}
+        <div className="rounded-md border p-1">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+
       </div>
     </div>
   );

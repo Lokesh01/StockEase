@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProductTable from "../Products/ProductTable";
+import { products } from "../Products/ProductData";
+import { columns } from "../Products/columns";
 
 const AppTable = () => {
   return (
@@ -16,7 +18,7 @@ const AppTable = () => {
       </CardHeader>
 
       <CardContent>
-        <ProductTable />
+        <ProductTable data={products} columns={columns} />
       </CardContent>
     </Card>
   );

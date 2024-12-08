@@ -6,9 +6,12 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Popover } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { LucideGitPullRequestDraft } from "lucide-react";
 import React, { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { FaCheck, FaInbox } from "react-icons/fa";
