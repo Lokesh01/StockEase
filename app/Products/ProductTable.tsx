@@ -14,7 +14,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import StatusDropdown, { Status } from "../AppTable/dropdowns/StatusDropdown";
 import CategoriesDropdown from "../AppTable/dropdowns/CategoriesDropdown";
 import {
@@ -25,6 +25,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { BiFirstPage, BiLastPage } from "react-icons/bi";
+import { GrFormPrevious, GrFormNext } from "react-icons/gr";
+import PaginationSelection from "./PaginationSelection";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { IoClose } from "react-icons/io5";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -116,8 +123,8 @@ const ProductTable = <TData, TValue>({
 
   return (
     <div className="poppins">
-      <div className="flex flex-col gap-3 mb-8 mt-6">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 mb-8 mt-6 ">
+        <div className="flex items-center justify-between ">
           <Input
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
@@ -126,8 +133,7 @@ const ProductTable = <TData, TValue>({
             placeholder="Search by name..."
             className="max-w-sm h-10"
           />
-
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ">
             <StatusDropdown
               selectedStatuses={selectedStatuses}
               setSelectedStatuses={setSelectedStatuses}
@@ -139,63 +145,202 @@ const ProductTable = <TData, TValue>({
           </div>
         </div>
 
-        {/* filter Area */}
-
-        {/* Upcoming Table */}
-        <div className="rounded-md border p-1">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-
+        {/* filter area */}
+        <FilterArea
+          selectedStatuses={selectedStatuses}
+          setSelectedStatuses={setSelectedStatuses}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+        />
       </div>
+
+      {/* Upcoming table */}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between mt-5">
+        <PaginationSelection
+          pagination={pagination}
+          setPagination={setPagination}
+        />
+
+        <div className="flex gap-6 items-center">
+          <span className="text-sm  text-gray-500">
+            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+          </span>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            {/* First Page Button */}
+            <Button
+              variant="outline"
+              className="size-9 w-12"
+              size="sm"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <BiFirstPage />
+            </Button>
+
+            {/* Previous Page Button */}
+            <Button
+              variant="outline"
+              className="size-9 w-12"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <GrFormPrevious />
+            </Button>
+
+            {/* Next Page Button */}
+            <Button
+              className="size-9 w-12"
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <GrFormNext />
+            </Button>
+
+            {/* Last Page Button */}
+            <Button
+              className="size-9 w-12"
+              variant="outline"
+              size="sm"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <BiLastPage />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FilterArea = ({
+  selectedStatuses,
+  setSelectedStatuses,
+  selectedCategories,
+  setSelectedCategories,
+}: {
+  selectedStatuses: string[];
+  setSelectedStatuses: Dispatch<SetStateAction<string[]>>;
+  selectedCategories: string[];
+  setSelectedCategories: Dispatch<SetStateAction<string[]>>;
+}) => {
+  return (
+    <div className="flex gap-3 poppins">
+      {/* status */}
+      {selectedStatuses.length > 0 && (
+        <div className="border-dashed border rounded-sm p-1 flex gap-2 items-center px-2 text-sm">
+          <span className="text-gray-600">Status</span>
+          <Separator orientation="vertical" />
+          <div className="flex gap-2 items-center">
+            {selectedStatuses.length < 3 ? (
+              <>
+                {selectedStatuses.map((status, index) => (
+                  <Badge key={index} variant={"secondary"}>
+                    {status}
+                  </Badge>
+                ))}
+              </>
+            ) : (
+              <>
+                <Badge variant={"secondary"}>3 Selected</Badge>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* category */}
+      {selectedCategories.length > 0 && (
+        <div className="border-dashed border rounded-sm p-1 flex gap-2 items-center px-2 text-sm">
+          <span className="text-gray-600">category</span>
+          <Separator orientation="vertical" />
+          <div className="flex gap-2 items-center">
+            {selectedCategories.length < 3 ? (
+              <>
+                {selectedCategories.map((category, index) => (
+                  <Badge key={index} variant={"secondary"}>
+                    {category}
+                  </Badge>
+                ))}
+              </>
+            ) : (
+              <>
+                <Badge variant={"secondary"}>3 Selected</Badge>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Reset button */}
+      {(selectedCategories.length > 0 || selectedStatuses.length > 0) && (
+        <Button
+          variant="ghost"
+          className="p-1 px-2"
+          onClick={() => {
+            setSelectedStatuses([]);
+            setSelectedCategories([]);
+          }}
+        >
+          <span>Reset</span>
+          <IoClose />
+        </Button>
+      )}
     </div>
   );
 };

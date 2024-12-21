@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProductTable from "../Products/ProductTable";
 import { products } from "../Products/ProductData";
 import { columns } from "../Products/columns";
+import ProductDialog from "./ProductDialog/ProductDialog";
 
 const AppTable = () => {
   return (
@@ -13,7 +13,7 @@ const AppTable = () => {
             <CardTitle className="font-bold text-[23px]">Products</CardTitle>
             <p className="text-sm text-slate-600">34 products</p>
           </div>
-          <Button>Add Product</Button>
+          <ProductDialog />
         </div>
       </CardHeader>
 

@@ -67,11 +67,11 @@ const SortableHeader: React.FC<SortableHeaderProps> = ({ column, label }) => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start" side="bottom">
-        <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+        <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
           <IoMdArrowUp className="h-4 w-4 mr-2" />
           Asc
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+        <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
           <IoMdArrowDown className="h-4 w-4 mr-2" />
           Desc
         </DropdownMenuItem>
