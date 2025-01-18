@@ -1,5 +1,6 @@
-import { Product } from "./Products/columns";
 import { create } from "zustand";
+import { Product } from "./Products/columns";
+import { products } from "./Products/ProductData";
 
 //structure of the overall state
 interface ProductState {
@@ -22,22 +23,82 @@ interface ProductState {
 export const useProductStore = create<ProductState>((set) => ({
   allProducts: [],
   isLoading: false,
-  openDialog: false,
-  setOpenDialog: (openDialog: boolean) => set({ openDialog }),
-  openProductDialog: false,
-  setOpenProductDialog: (openProductDialog: boolean) =>
-    set({ openProductDialog }),
   selectedProduct: null,
-  setSelectedProduct: (product: Product | null) => set({ selectedProduct: product }),
-  setAllProducts: (allProducts: Product[]) => set({ allProducts }),
+  openDialog: false,
+  setOpenDialog: (openDialog) => {
+    set({ openDialog: openDialog });
+  },
+  openProductDialog: false,
+  setOpenProductDialog: (openProductDialog) => {
+    set({ openProductDialog: openProductDialog });
+  },
+  setSelectedProduct: (product: Product | null) => {
+    set({ selectedProduct: product });
+  },
+  setAllProducts: (allProducts) => {
+    set({ allProducts: allProducts });
+  },
   loadProducts: async () => {
+    const fetchedProducts = await fetchProducts();
+    set({ allProducts: fetchedProducts });
+  },
+  addProduct: async (product: Product) => {
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/products");
-      const data = await response.json();
-      set({ allProducts: data });
-    } catch (error) {
-      console.error("Error loading products:", error);
+      await new Promise((resolve) => setTimeout(resolve, 789));
+      set((state) => ({ allProducts: [...state.allProducts, product] }));
+      return { success: true };
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  updateProduct: async (updatedProduct: Product) => {
+    set({ isLoading: true });
+    try {
+      // Simulate the update process with a delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log(updatedProduct);
+
+      // Update the product in the state
+      set((state) => ({
+        allProducts: state.allProducts.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
+        ),
+      }));
+
+      return { success: true };
+    } finally {
+      set({ isLoading: false });
+      set({ openProductDialog: false });
+      set({ selectedProduct: null });
+    }
+  },
+
+  deleteProduct: async (productId: string) => {
+    set({ isLoading: true });
+    try {
+      // Simulate the deletion process with a delay
+      await new Promise((resolve) => setTimeout(resolve, 1789));
+
+      set((state) => ({
+        allProducts: state.allProducts.filter(
+          (product) => product.id !== productId
+        ),
+      }));
+      return { success: true };
+    } finally {
+      set({ isLoading: false });
+      set({ openDialog: false });
+      set({ selectedProduct: null });
+    }
+  },
 }));
+
+function fetchProducts(): Promise<Product[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(products);
+    }, 1200);
+  });
+}

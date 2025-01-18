@@ -1,4 +1,5 @@
 import React from "react";
+import { Row } from "@tanstack/react-table";
 import { Product } from "./columns";
 import { MdContentCopy, MdOutlineDelete } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
@@ -11,6 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
+import { useProductStore } from "../useProductStore";
+import { useToast } from "@/hooks/use-toast";
+import { nanoid } from "nanoid";
 type MenuItem = {
   icon: JSX.Element;
   label: string;
@@ -19,9 +23,14 @@ type MenuItem = {
 };
 
 const ProductDropdown = ({ row }: { row: Row<Product> }) => {
-  // const {setSelectedProduct, setOpenDialog} = useProductStore();
+  const {
+    setSelectedProduct,
+    setOpenDialog,
+    setOpenProductDialog,
+    addProduct,
+  } = useProductStore();
 
-  // const {toast} = useToast();
+  const {toast} = useToast();
 
   const menuItems: MenuItem[] = [
     { icon: <MdContentCopy />, label: "Copy", className: "" },
@@ -29,11 +38,36 @@ const ProductDropdown = ({ row }: { row: Row<Product> }) => {
     { icon: <MdOutlineDelete />, label: "Delete", className: "text-red-600" },
   ];
 
-  // const handleClickedItem = async (item: MenuItem) => {
-  //   if(item.label === "Delete"){
-  //     // setOpenDialog(true);
-  //   }
-  // }
+  async function handleClickedItem(item: MenuItem) {
+    if (item.label === "Delete") {
+      setOpenDialog(true);
+      setSelectedProduct(row.original);
+    }
+
+    if (item.label === "Copy") {
+      const productToCopy: Product = {
+        ...row.original,
+        id: nanoid(),
+        name: `${row.original.name} (copy)`,
+        createdAt: new Date(),
+      };
+
+      const result = await addProduct(productToCopy);
+
+      if (result) {
+        toast({
+          title: "Copy successfully",
+          description: "Product has been copied successfully",
+        });
+      }
+    }
+
+    if (item.label === "Edit") {
+      setOpenProductDialog(true);
+      setSelectedProduct(row.original);
+    }
+  }
+
   return (
     <div>
       <DropdownMenu>
@@ -52,7 +86,7 @@ const ProductDropdown = ({ row }: { row: Row<Product> }) => {
               <DropdownMenuItem
                 key={index}
                 className={`flex items-center gap-1 p-[10px] ${item.className}`}
-                onClick={() => console.log(item.label)}
+                onClick={() => handleClickedItem(item)}
               >
                 {item.icon}
                 <span>{item.label}</span>
